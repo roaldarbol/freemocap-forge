@@ -1,0 +1,25 @@
+[workspace]
+authors = ["Mikkel Roald-Arbøl <github.ggb9a@simplelogin.co>"]
+channels = ["conda-forge"]
+name = "freemocap-forge"
+# Where the build tooling runs — not the set of published platforms (that is
+# decided by the recipes + CI; osx-64 is tooling-only, since mediapipe ships no
+# osx-64 wheel).
+platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+version = "0.1.0"
+
+[dependencies]
+rattler-build = ">=0.75"
+
+# The target channel is referenced in the three tasks below — change it in all
+# three if you deploy somewhere other than https://prefix.dev/freemocap-forge.
+[tasks]
+# Build every recipe (topologically sorted by rattler-build), skipping anything
+# already published to the channel. Used by the linux-64 CI job, which owns all
+# noarch recipes.
+build = "rattler-build build --recipe-dir recipes -c https://prefix.dev/freemocap-forge -c conda-forge --skip-existing=all"
+# Platform-specific recipes only — used by the osx-arm64 and win-64 CI jobs so
+# noarch packages are not built (and uploaded) three times.
+build-arch = "rattler-build build --recipe recipes/mediapipe -c https://prefix.dev/freemocap-forge -c conda-forge --skip-existing=all"
+# Append package files: pixi run upload output/**/*.conda
+upload = "rattler-build upload prefix -c freemocap-forge"

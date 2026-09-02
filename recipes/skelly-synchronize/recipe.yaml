@@ -1,0 +1,62 @@
+# The freemocap v2 alpha consumes skelly_synchronize from the rewrite in the
+# freemocap/skellysync repository (branch philip/rewrite), not from PyPI.
+schema_version: 1
+
+context:
+  # flit reads the version from skelly_synchronize/__init__.py at the pinned commit
+  version: "2025.4.1037"
+  # freemocap/skellysync @ philip/rewrite, 2026-08-15
+  git_rev: 2aea71b7f11ed0003104485fab4947608f02323e
+
+package:
+  name: skelly-synchronize
+  version: ${{ version }}
+
+source:
+  git: https://github.com/freemocap/skellysync
+  rev: ${{ git_rev }}
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+  python:
+    entry_points:
+      - skelly-synchronize = skelly_synchronize.cli.main:main
+      - skelly-sync-api = skelly_synchronize.api.main:run
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - flit-core
+  run:
+    - python >=3.10,<3.13
+    - pydantic >=2.0,<3
+    # upstream pins librosa==0.10.1 / deffcode==0.2.6 / toml==0.10.2 /
+    # setuptools==75.8.0 exactly; relaxed here to resolvable conda ranges
+    - librosa >=0.10.1,<0.11
+    - numpy >=1.26.2,<3
+    - scipy >=1.11.4,<2
+    # upstream requires opencv-contrib-python; conda-forge's py-opencv includes contrib
+    - py-opencv >=4.10
+    - deffcode >=0.2.6,<0.3
+    - toml >=0.10.2
+    - matplotlib-base >=3.8.2,<4
+    - setuptools
+
+tests:
+  - python:
+      imports:
+        - skelly_synchronize
+      pip_check: false
+
+about:
+  homepage: https://github.com/freemocap/skellysync
+  summary: Audio-based synchronization of multi-camera videos for FreeMoCap
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

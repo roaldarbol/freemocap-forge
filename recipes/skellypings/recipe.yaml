@@ -1,0 +1,44 @@
+schema_version: 1
+
+context:
+  version: "0.1.0"
+  # freemocap/skellypings @ main, 2026-07-21
+  git_rev: 94b9e4b58322fdf105d48583fb970cade8977de7
+
+package:
+  name: skellypings
+  version: ${{ version }}
+
+source:
+  git: https://github.com/freemocap/skellypings
+  rev: ${{ git_rev }}
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling
+  run:
+    - python >=3.11
+    - python-dotenv >=1.2.1
+    - requests >=2.31.0
+
+tests:
+  - python:
+      imports:
+        - skellypings
+
+about:
+  homepage: https://github.com/freemocap/skellypings
+  summary: Anonymous usage pings for the FreeMoCap "skelly" packages
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

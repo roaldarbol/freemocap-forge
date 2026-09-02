@@ -1,0 +1,5 @@
+# One build per python minor so files land in the versioned site-packages.
+# Matches freemocap's supported range (>=3.11,<3.13 via skellytracker).
+python:
+  - "3.11.*"
+  - "3.12.*"

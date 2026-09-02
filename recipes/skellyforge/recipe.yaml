@@ -1,0 +1,53 @@
+schema_version: 1
+
+context:
+  # flit reads the version from skellyforge/__init__.py at the pinned commit
+  version: "2024.12.1009"
+  # freemocap/skellyforge @ main, 2026-08-05
+  git_rev: ddf24f3aaa4388e5883afada217137223546c24e
+
+package:
+  name: skellyforge
+  version: ${{ version }}
+
+source:
+  git: https://github.com/freemocap/skellyforge
+  rev: ${{ git_rev }}
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+  python:
+    entry_points:
+      - skellyforge = skellyforge.__main__:run
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - flit-core
+  run:
+    - python >=3.10
+    - numpy
+    - scipy
+    - pandas
+    - toml >=0.10.2
+    - pyyaml >=6.0
+    - pyarrow >=21.0.0
+
+tests:
+  - python:
+      imports:
+        - skellyforge
+      pip_check: false
+
+about:
+  homepage: https://github.com/freemocap/skellyforge
+  summary: Post-processing (filtering, gap-filling, rotation) for FreeMoCap motion capture data
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

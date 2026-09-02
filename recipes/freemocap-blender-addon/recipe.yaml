@@ -1,0 +1,45 @@
+schema_version: 1
+
+context:
+  # flit reads the version from freemocap_blender_addon/__init__.py at the pinned commit
+  version: "2026.4.1041"
+  # freemocap/freemocap_blender_addon @ main, 2026-08-18
+  git_rev: 9f08f2c7d786ae92ab5c374a71aa6791a43d27b8
+
+package:
+  name: freemocap-blender-addon
+  version: ${{ version }}
+
+source:
+  git: https://github.com/freemocap/freemocap_blender_addon
+  rev: ${{ git_rev }}
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - flit-core
+  run:
+    - python >=3.10
+
+# Importing the package triggers its Blender dependency installer, so test for
+# presence rather than importability.
+tests:
+  - package_contents:
+      site_packages:
+        - freemocap_blender_addon
+
+about:
+  homepage: https://github.com/freemocap/freemocap_blender_addon
+  summary: Blender add-on that rigs and animates FreeMoCap output
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

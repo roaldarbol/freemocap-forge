@@ -1,0 +1,71 @@
+schema_version: 1
+
+context:
+  version: "2.0.0a6"
+  # freemocap/skellycam @ main, 2026-08-08
+  git_rev: d091ecef176a83bb1bc648bdf5f2ee702e2612da
+
+package:
+  name: skellycam
+  version: ${{ version }}
+
+source:
+  git: https://github.com/freemocap/skellycam
+  rev: ${{ git_rev }}
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+  python:
+    entry_points:
+      - skellycam = skellycam.__main__:entry_point
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.11
+    - numpy
+    # upstream pins opencv-contrib-python==4.12.*; conda-forge's py-opencv
+    # includes the contrib modules
+    - py-opencv >=4.10
+    - pydantic >=2,<3
+    - pillow
+    - psutil >=7.0.0
+    - setproctitle >=1.3.3
+    - scipy >=1.11.4
+    - polars
+    - uvicorn >=0.30.6
+    - fastapi >=0.115.0
+    - tzlocal >=5.2
+    - httpx >=0.27.2
+    - websockets >=13.1
+    - python-sounddevice >=0.4.6
+    - av >=12.0.0
+    - tabulate >=0.9.0
+    - numpydantic >=1.6.9
+    - cv2-enumerate-cameras >=1.2.2
+    - skellylogs
+    - skellypings
+    - beartype >=0.19
+    - msgspec >=0.19
+
+tests:
+  - python:
+      imports:
+        - skellycam
+      pip_check: false
+
+about:
+  homepage: https://github.com/freemocap/skellycam
+  summary: Multi-camera video capture for FreeMoCap
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

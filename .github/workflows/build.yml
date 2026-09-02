@@ -1,0 +1,78 @@
+# One workflow for everything:
+#   - pull_request:      build whatever is not already on the channel (dry run, no upload)
+#   - push to main:      build + upload
+#   - workflow_dispatch: build + upload (use this to bootstrap an empty channel)
+#
+# There is no per-recipe matrix or change detection. Every run invokes
+# rattler-build over the recipes with --skip-existing=all: anything whose
+# version + build number is already published on the channel is skipped in
+# seconds, and rattler-build topologically sorts the rest, so inter-recipe
+# dependencies (e.g. freemocap -> skellycam -> skellylogs) build in the right
+# order even on a completely empty channel.
+#
+# The linux-64 job builds all recipes (it owns the noarch ones); osx-arm64 and
+# win-64 only build the platform-specific recipes (see `build-arch` in pixi.toml).
+name: Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build (${{ matrix.platform }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-64
+            os: ubuntu-latest
+            task: build
+          - platform: osx-arm64
+            os: macos-14
+            task: build-arch
+          - platform: win-64
+            os: windows-latest
+            task: build-arch
+
+    permissions:
+      # OIDC token for trusted publishing to prefix.dev
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: prefix-dev/setup-pixi@v0.10.2
+        with:
+          cache: true
+
+      - name: Build recipes
+        run: pixi run ${{ matrix.task }}
+
+      - name: Store packages as CI artifact
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: packages-${{ matrix.platform }}
+          path: output/**/*.conda
+          if-no-files-found: ignore
+
+      - name: Upload to prefix.dev
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          shopt -s nullglob globstar
+          pkgs=(output/**/*.conda)
+          if [ ${#pkgs[@]} -eq 0 ]; then
+            echo "Everything is already published — nothing to upload."
+            exit 0
+          fi
+          pixi run upload "${pkgs[@]}"

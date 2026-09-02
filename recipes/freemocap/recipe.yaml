@@ -1,0 +1,76 @@
+# FreeMoCap v2 alpha, built from the GitHub release tag. Upstream resolves its
+# sub-packages ("skellies") from git branches via uv sources; here they come
+# from this forge's channel, pinned in their own recipes.
+schema_version: 1
+
+context:
+  version: "2.0.0a23"
+  tag: v2.0.0-alpha.23
+
+package:
+  name: freemocap
+  version: ${{ version }}
+
+source:
+  url: https://github.com/freemocap/freemocap/archive/refs/tags/${{ tag }}.tar.gz
+  sha256: 1696302a11b63aeaeb9e2dbdcefb7239b95c68f5773e4870a3d36a29fb6b7354
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+  python:
+    entry_points:
+      - freemocap = freemocap.__main__:run_main
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.11,<3.13
+    - numba >=0.65.1
+    - libsass >=0.23.0
+    # upstream requires opencv-contrib-python; conda-forge's py-opencv includes contrib
+    - py-opencv >=4.10
+    - pyinstaller >=6.11.0
+    - requests >=2.32.3
+    - pydantic >=2.10.4,<3
+    - numpydantic >=1.6.7
+    - scikit-learn >=1.7.2
+    - tomli-w >=1.2.0
+    # upstream: scipy-stubs~=1.17.1; upper bound dropped, stubs are inert at runtime
+    - scipy-stubs >=1.17.1
+    - beartype >=0.19
+    - msgspec >=0.19
+    # from upstream's override-dependencies
+    - numpy >=2.3.4,<2.5
+    - pandas >=2.2.2,<3
+    # the sub-skellies, all built by this forge
+    - skellycam >=2.0.0a6
+    - skellyforge
+    - skelly-synchronize
+    - skellytracker
+    - skellylogs
+    - skellypings
+    - freemocap-blender-addon
+
+tests:
+  - python:
+      imports:
+        - freemocap
+      pip_check: false
+
+about:
+  homepage: https://freemocap.org
+  repository: https://github.com/freemocap/freemocap
+  documentation: https://freemocap.github.io/documentation/
+  summary: A free and open source markerless motion capture system for everyone
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

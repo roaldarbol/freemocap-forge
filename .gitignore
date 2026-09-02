@@ -1,0 +1,7 @@
+# pixi environments
+.pixi/
+
+# rattler-build output
+output/
+
+.DS_Store

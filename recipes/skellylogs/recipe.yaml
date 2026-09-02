@@ -1,0 +1,43 @@
+schema_version: 1
+
+context:
+  version: "0.1.0"
+  # freemocap/skellylogs @ main, 2026-08-16
+  git_rev: 8c4b5eace34b9b0bf44018de2f646b50288c2aa5
+
+package:
+  name: skellylogs
+  version: ${{ version }}
+
+source:
+  git: https://github.com/freemocap/skellylogs
+  rev: ${{ git_rev }}
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.9
+
+tests:
+  - python:
+      imports:
+        - skellylogs
+
+about:
+  homepage: https://github.com/freemocap/skellylogs
+  summary: Shared logging configuration for the FreeMoCap "skelly" packages
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

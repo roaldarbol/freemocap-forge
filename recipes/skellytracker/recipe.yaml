@@ -1,0 +1,69 @@
+# Conda has no extras, so this package corresponds to skellytracker[all-cpu]:
+# the base package plus the mediapipe and CPU onnxruntime backends. GPU
+# (CUDA/TensorRT/DirectML) execution providers are pip-only extras upstream and
+# are not modelled here.
+schema_version: 1
+
+context:
+  # flit reads the version from skellytracker/__init__.py at the pinned commit
+  version: "2024.9.1019"
+  # freemocap/skellytracker @ main, 2026-07-22
+  git_rev: cb739aa5d059c90ba9c92ab5fbd987096423a638
+
+package:
+  name: skellytracker
+  version: ${{ version }}
+
+source:
+  git: https://github.com/freemocap/skellytracker
+  rev: ${{ git_rev }}
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+  python:
+    entry_points:
+      - skellytracker = skellytracker.__main__:cli_main
+      - skellytracker_blendshapes = skellytracker.scripts.blendshapes_to_csv:main
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - flit-core
+  run:
+    - python >=3.11,<3.13
+    # upstream requires opencv-contrib-python; conda-forge's py-opencv includes contrib
+    - py-opencv >=4.10
+    - pydantic >=2,<3
+    # upstream pins numpy==2.4.6; freemocap's own resolution overrides this to
+    # the range below, so the relaxation matches what upstream actually ships
+    - numpy >=2.3.4,<2.5
+    - tqdm >=4
+    - numpydantic >=1.6.7
+    - requests >=2.32.3
+    - beartype >=0.19
+    - pyyaml >=6.0
+    - polars
+    - scipy
+    # [all-cpu] extra: mediapipe (from this forge) + CPU onnx runtime
+    - mediapipe 0.10.33.*
+    - onnx
+    - onnxruntime
+
+tests:
+  - python:
+      imports:
+        - skellytracker
+      pip_check: false
+
+about:
+  homepage: https://github.com/freemocap/skellytracker
+  summary: Pose estimation and tracking backends (mediapipe, ONNX) for FreeMoCap
+  license: AGPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roaldarbol
