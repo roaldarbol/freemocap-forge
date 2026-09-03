@@ -17,12 +17,12 @@ rattler-build = ">=0.75"
 # Build every recipe (topologically sorted by rattler-build), skipping anything
 # already published to the channel. Used by the linux-64 CI job, which owns all
 # noarch recipes.
-build = "rattler-build build --recipe-dir recipes -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all"
+build = "rattler-build build --recipe-dir recipes -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all --test=native"
 # Platform-specific recipes only — used by the osx-arm64 and win-64 CI jobs so
 # noarch packages are not built (and published) three times.
-build-arch = "rattler-build build --recipe recipes/mediapipe -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all"
+build-arch = "rattler-build build --recipe recipes/mediapipe -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all --test=native"
 # Same as the build tasks, but also uploads what was built (rattler-build
 # publish = build + upload + index). Auth: OIDC trusted publishing in CI, or
 # `pixi auth login prefix.dev` / PREFIX_API_KEY locally.
-publish = "rattler-build publish --recipe-dir recipes --to https://prefix.dev/roaldarbol/freemocap-forge -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all"
-publish-arch = "rattler-build publish --recipe recipes/mediapipe --to https://prefix.dev/roaldarbol/freemocap-forge -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all"
+publish = "rattler-build publish --recipe-dir recipes --to https://prefix.dev/roaldarbol/freemocap-forge -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all --test=native"
+publish-arch = "rattler-build publish --recipe recipes/mediapipe --to https://prefix.dev/roaldarbol/freemocap-forge -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all --test=native"
