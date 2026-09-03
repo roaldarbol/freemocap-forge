@@ -27,7 +27,9 @@ build:
 
 requirements:
   host:
-    - python >=3.10
+    # upper bound matters: upstream requires-python is <3.13, and pip refuses
+    # to install under a newer host python
+    - python >=3.10,<3.13
     - pip
     - flit-core
   run:
