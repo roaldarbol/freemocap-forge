@@ -92,11 +92,13 @@ jobs:
         with:
           run-install: false
 
+      # Mirrors the README install instructions: a pixi workspace with this
+      # channel first, then conda-forge. (Not `pixi exec` — its solve excluded
+      # our skellyforge under strict channel priority, unlike workspaces.)
       - name: Install freemocap from the channel and import the stack
         shell: bash
-        run: >
-          pixi exec
-          -c https://prefix.dev/roaldarbol/freemocap-forge
-          -c conda-forge
-          -s freemocap
-          python -c "import freemocap, skellycam, skellytracker, skellyforge, skelly_synchronize, skellylogs, skellypings, mediapipe; print('all imports ok')"
+        run: |
+          pixi init smoke -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge
+          cd smoke
+          pixi add freemocap
+          pixi run python -c "import freemocap, skellycam, skellytracker, skellyforge, skelly_synchronize, skellylogs, skellypings, mediapipe; print('all imports ok')"
