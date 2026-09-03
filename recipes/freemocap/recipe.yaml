@@ -50,7 +50,9 @@ requirements:
     - pandas >=2.2.2,<3
     # the sub-skellies, all built by this forge
     - skellycam >=2.0.0a6
-    - skellyforge
+    # >= .post0 excludes conda-forge's skellyforge 2024.12.1009 (old PyPI
+    # release); this forge ships the v2 git-main build under .post0
+    - skellyforge >=2024.12.1009.post0
     - skelly-synchronize
     - skellytracker
     - skellylogs

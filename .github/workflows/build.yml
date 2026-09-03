@@ -34,13 +34,16 @@ jobs:
         include:
           - platform: linux-64
             os: ubuntu-latest
-            task: build
+            build_task: build
+            publish_task: publish
           - platform: osx-arm64
             os: macos-14
-            task: build-arch
+            build_task: build-arch
+            publish_task: publish-arch
           - platform: win-64
             os: windows-latest
-            task: build-arch
+            build_task: build-arch
+            publish_task: publish-arch
 
     permissions:
       # OIDC token for trusted publishing to prefix.dev
@@ -54,8 +57,10 @@ jobs:
         with:
           cache: true
 
-      - name: Build recipes
-        run: pixi run ${{ matrix.task }}
+      # PRs only build; pushes to main and manual runs publish (build + upload
+      # + index in one rattler-build invocation, authenticated via OIDC).
+      - name: Build recipes (and publish on main)
+        run: pixi run ${{ github.event_name == 'pull_request' && matrix.build_task || matrix.publish_task }}
 
       - name: Store packages as CI artifact
         uses: actions/upload-artifact@v7
@@ -64,15 +69,3 @@ jobs:
           name: packages-${{ matrix.platform }}
           path: output/**/*.conda
           if-no-files-found: ignore
-
-      - name: Upload to prefix.dev
-        if: github.event_name != 'pull_request'
-        shell: bash
-        run: |
-          shopt -s nullglob globstar
-          pkgs=(output/**/*.conda)
-          if [ ${#pkgs[@]} -eq 0 ]; then
-            echo "Everything is already published — nothing to upload."
-            exit 0
-          fi
-          pixi run upload "${pkgs[@]}"

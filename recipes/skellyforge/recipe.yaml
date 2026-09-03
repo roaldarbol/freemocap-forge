@@ -1,8 +1,13 @@
 schema_version: 1
 
 context:
-  # flit reads the version from skellyforge/__init__.py at the pinned commit
-  version: "2024.12.1009"
+  # flit reads 2024.12.1009 from skellyforge/__init__.py at the pinned commit,
+  # but conda-forge already ships a skellyforge 2024.12.1009 built from the old
+  # PyPI release (pre-v2 code, numpy 1.26 pins). The .post0 suffix makes this
+  # git-main build distinct, orders it above the conda-forge package, and keeps
+  # --skip-existing=all from skipping it. Drop the suffix when upstream bumps
+  # its version.
+  version: "2024.12.1009.post0"
   # freemocap/skellyforge @ main, 2026-08-05
   git_rev: ddf24f3aaa4388e5883afada217137223546c24e
 

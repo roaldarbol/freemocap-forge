@@ -2,12 +2,12 @@
 
 Conda packages for the [FreeMoCap](https://freemocap.org) **v2 alpha** stack,
 built with [rattler-build](https://rattler.build) and published to
-[https://prefix.dev/freemocap-forge](https://prefix.dev/freemocap-forge).
+[https://prefix.dev/roaldarbol/freemocap-forge](https://prefix.dev/roaldarbol/freemocap-forge).
 
 ```sh
-pixi add -c https://prefix.dev/freemocap-forge -c conda-forge freemocap
+pixi add -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge freemocap
 # or
-conda install -c https://prefix.dev/freemocap-forge -c conda-forge freemocap
+conda install -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge freemocap
 ```
 
 Platforms: `linux-64`, `osx-arm64`, `win-64` (no `osx-64` — upstream ships no
@@ -20,7 +20,7 @@ mediapipe wheel for Intel macs). Python 3.11–3.12.
 | `freemocap` | 2.0.0a23 | tag `v2.0.0-alpha.23` |
 | `skellycam` | 2.0.0a6 | `skellycam` @ main (commit-pinned) |
 | `skellytracker` | 2024.9.1019 | `skellytracker` @ main (commit-pinned); equals `skellytracker[all-cpu]` |
-| `skellyforge` | 2024.12.1009 | `skellyforge` @ main (commit-pinned) |
+| `skellyforge` | 2024.12.1009.post0 | `skellyforge` @ main (commit-pinned) |
 | `skelly-synchronize` | 2025.4.1037 | `skellysync` @ `philip/rewrite` (commit-pinned) |
 | `skellylogs` | 0.1.0 | `skellylogs` @ main (commit-pinned) |
 | `skellypings` | 0.1.0 | `skellypings` @ main (commit-pinned) |
@@ -44,8 +44,10 @@ One workflow, no per-recipe matrix, no change detection:
 - The `linux-64` job builds **all** recipes (it owns the `noarch` ones);
   `osx-arm64` and `win-64` build only the platform-specific recipes
   (currently just `mediapipe` — see the `build-arch` task in `pixi.toml`).
-- Pull requests build without uploading; pushes to `main` and manual
-  `workflow_dispatch` runs upload to prefix.dev.
+- Pull requests only build (`build` / `build-arch` tasks); pushes to `main`
+  and manual `workflow_dispatch` runs use `rattler-build publish`
+  (`publish` / `publish-arch` tasks), which builds, uploads, and indexes in
+  one step, authenticating via OIDC trusted publishing.
 
 ## Updating a package
 
@@ -63,19 +65,20 @@ For `freemocap` itself, update `context.tag`/`context.version` and the tarball
 ```sh
 pixi run build                     # everything not already on the channel
 pixi run build-arch                # platform-specific recipes only
-pixi run rattler-build build --recipe recipes/<name> -c https://prefix.dev/freemocap-forge -c conda-forge
+pixi run rattler-build build --recipe recipes/<name> -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge
 ```
 
 ## Publishing setup (one-time)
 
-1. Create the `freemocap-forge` channel on [prefix.dev](https://prefix.dev).
-2. Configure this GitHub repository as a **trusted publisher** for the channel
-   (channel settings → Trusted Publishers); the workflow authenticates via
-   OIDC, no API key secret needed.
+1. Create the `freemocap-forge` channel on [prefix.dev](https://prefix.dev)
+   (channels are scoped under your account: `roaldarbol/freemocap-forge`).
+2. Under the channel's **Trusted Publishers**, grant this GitHub repository
+   access; the workflow authenticates via OIDC, no API key secret needed.
 3. Run the workflow manually (`workflow_dispatch`) to bootstrap the channel.
 
-To publish from your machine instead: `rattler-build upload prefix -c freemocap-forge output/**/*.conda`
-with a `PREFIX_API_KEY` in the environment.
+To publish from your machine instead, authenticate once with
+`pixi auth login prefix.dev` (or set `PREFIX_API_KEY`) and run
+`pixi run publish`.
 
-The channel name is referenced in the `pixi.toml` tasks — change it there if
+The channel URL is referenced in the `pixi.toml` tasks — change it there if
 you deploy elsewhere.

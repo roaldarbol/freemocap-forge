@@ -11,15 +11,18 @@ version = "0.1.0"
 [dependencies]
 rattler-build = ">=0.75"
 
-# The target channel is referenced in the three tasks below — change it in all
-# three if you deploy somewhere other than https://prefix.dev/freemocap-forge.
+# The target channel appears in every task below — change it everywhere if you
+# deploy somewhere other than https://prefix.dev/roaldarbol/freemocap-forge.
 [tasks]
 # Build every recipe (topologically sorted by rattler-build), skipping anything
 # already published to the channel. Used by the linux-64 CI job, which owns all
 # noarch recipes.
-build = "rattler-build build --recipe-dir recipes -c https://prefix.dev/freemocap-forge -c conda-forge --skip-existing=all"
+build = "rattler-build build --recipe-dir recipes -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all"
 # Platform-specific recipes only — used by the osx-arm64 and win-64 CI jobs so
-# noarch packages are not built (and uploaded) three times.
-build-arch = "rattler-build build --recipe recipes/mediapipe -c https://prefix.dev/freemocap-forge -c conda-forge --skip-existing=all"
-# Append package files: pixi run upload output/**/*.conda
-upload = "rattler-build upload prefix -c freemocap-forge"
+# noarch packages are not built (and published) three times.
+build-arch = "rattler-build build --recipe recipes/mediapipe -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all"
+# Same as the build tasks, but also uploads what was built (rattler-build
+# publish = build + upload + index). Auth: OIDC trusted publishing in CI, or
+# `pixi auth login prefix.dev` / PREFIX_API_KEY locally.
+publish = "rattler-build publish --recipe-dir recipes --to https://prefix.dev/roaldarbol/freemocap-forge -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all"
+publish-arch = "rattler-build publish --recipe recipes/mediapipe --to https://prefix.dev/roaldarbol/freemocap-forge -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge --skip-existing=all"
