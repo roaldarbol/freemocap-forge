@@ -16,10 +16,25 @@ source:
   sha256: 1696302a11b63aeaeb9e2dbdcefb7239b95c68f5773e4870a3d36a29fb6b7354
 
 build:
-  # 1: skellyforge dependency renamed to freemocap-skellyforge
-  number: 1
+  # 2: ship all subpackages (upstream's `packages = ["freemocap"]` only
+  # includes the top-level dir, so freemocap.api etc. were missing at runtime)
+  number: 2
   noarch: python
-  script: python -m pip install . -vv --no-deps --no-build-isolation
+  script:
+    # Upstream's [tool.setuptools] packages list names only the top-level
+    # package — fine for their editable `uv sync` workflow, but a wheel build
+    # drops every subpackage. Switch it to find-discovery before installing.
+    - |
+      python - <<'EOF'
+      from pathlib import Path
+      p = Path("pyproject.toml")
+      s = p.read_text()
+      old = 'packages = ["freemocap"]'
+      new = 'packages = { find = { include = ["freemocap*"] } }'
+      assert old in s, "pyproject layout changed upstream; update this patch"
+      p.write_text(s.replace(old, new))
+      EOF
+    - python -m pip install . -vv --no-deps --no-build-isolation
   python:
     entry_points:
       - freemocap = freemocap.__main__:run_main
@@ -65,6 +80,10 @@ tests:
   - python:
       imports:
         - freemocap
+        # deep imports: catch missing subpackages, which `import freemocap`
+        # alone does not (the app defers its heavy imports)
+        - freemocap.api.server_constants
+        - freemocap.app.app
       pip_check: false
 
 about:

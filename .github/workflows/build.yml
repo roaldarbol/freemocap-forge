@@ -101,4 +101,4 @@ jobs:
           pixi init smoke -c https://prefix.dev/roaldarbol/freemocap-forge -c conda-forge
           cd smoke
           pixi add freemocap
-          pixi run python -c "import freemocap, skellycam, skellytracker, skellyforge, skelly_synchronize, skellylogs, skellypings, mediapipe; print('all imports ok')"
+          pixi run python -c "import freemocap, freemocap.app.app, skellycam, skellytracker, skellyforge, skelly_synchronize, skellylogs, skellypings, mediapipe; print('all imports ok')"
