@@ -16,7 +16,8 @@ source:
   sha256: 1696302a11b63aeaeb9e2dbdcefb7239b95c68f5773e4870a3d36a29fb6b7354
 
 build:
-  number: 0
+  # 1: skellyforge dependency renamed to freemocap-skellyforge
+  number: 1
   noarch: python
   script: python -m pip install . -vv --no-deps --no-build-isolation
   python:
@@ -50,9 +51,10 @@ requirements:
     - pandas >=2.2.2,<3
     # the sub-skellies, all built by this forge
     - skellycam >=2.0.0a6
-    # >= .post0 excludes conda-forge's skellyforge 2024.12.1009 (old PyPI
-    # release); this forge ships the v2 git-main build under .post0
-    - skellyforge >=2024.12.1009.post0
+    # not `skellyforge`: that name exists on conda-forge (old PyPI release) and
+    # strict channel priority would make it unresolvable from this channel —
+    # see the note in the freemocap-skellyforge recipe
+    - freemocap-skellyforge
     - skelly-synchronize
     - skellytracker
     - skellylogs

@@ -20,7 +20,7 @@ mediapipe wheel for Intel macs). Python 3.11–3.12.
 | `freemocap` | 2.0.0a23 | tag `v2.0.0-alpha.23` |
 | `skellycam` | 2.0.0a6 | `skellycam` @ main (commit-pinned) |
 | `skellytracker` | 2024.9.1019 | `skellytracker` @ main (commit-pinned); equals `skellytracker[all-cpu]` |
-| `skellyforge` | 2024.12.1009.post0 | `skellyforge` @ main (commit-pinned) |
+| `freemocap-skellyforge` | 2024.12.1009 | `skellyforge` @ main (commit-pinned); renamed — conda-forge holds `skellyforge` for the old PyPI release |
 | `skelly-synchronize` | 2025.4.1037 | `skellysync` @ `philip/rewrite` (commit-pinned) |
 | `skellylogs` | 0.1.0 | `skellylogs` @ main (commit-pinned) |
 | `skellypings` | 0.1.0 | `skellypings` @ main (commit-pinned) |

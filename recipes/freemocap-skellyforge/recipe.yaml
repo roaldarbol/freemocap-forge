@@ -1,18 +1,20 @@
+# Named freemocap-skellyforge, not skellyforge: conda-forge already ships a
+# skellyforge 2024.12.1009 built from the old PyPI release (pre-v2 code, numpy
+# 1.26 pins), and under strict channel priority a name that exists on
+# conda-forge cannot be resolved from this channel. The distinct name sidesteps
+# that; the installed Python module is still `skellyforge`. Fold this back into
+# a plain `skellyforge` package once upstream releases v2 and conda-forge
+# updates.
 schema_version: 1
 
 context:
-  # flit reads 2024.12.1009 from skellyforge/__init__.py at the pinned commit,
-  # but conda-forge already ships a skellyforge 2024.12.1009 built from the old
-  # PyPI release (pre-v2 code, numpy 1.26 pins). The .post0 suffix makes this
-  # git-main build distinct, orders it above the conda-forge package, and keeps
-  # --skip-existing=all from skipping it. Drop the suffix when upstream bumps
-  # its version.
-  version: "2024.12.1009.post0"
+  # flit reads the version from skellyforge/__init__.py at the pinned commit
+  version: "2024.12.1009"
   # freemocap/skellyforge @ main, 2026-08-05
   git_rev: ddf24f3aaa4388e5883afada217137223546c24e
 
 package:
-  name: skellyforge
+  name: freemocap-skellyforge
   version: ${{ version }}
 
 source:
@@ -40,6 +42,10 @@ requirements:
     - toml >=0.10.2
     - pyyaml >=6.0
     - pyarrow >=21.0.0
+  run_constraints:
+    # unsatisfiable: forbids co-installation with conda-forge's skellyforge,
+    # which ships the same `skellyforge` Python module
+    - skellyforge <0a0
 
 tests:
   - python:
