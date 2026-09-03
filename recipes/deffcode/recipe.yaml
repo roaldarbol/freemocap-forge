@@ -1,0 +1,55 @@
+# deffcode is pure Python, but conda-forge builds it arch-specific and ships
+# no osx-arm64 packages, which breaks skelly-synchronize (and thus freemocap)
+# there. This noarch build fills the gap: on osx-arm64 it is the only
+# candidate, while on linux-64/win-64 strict channel priority keeps using
+# conda-forge's builds, which satisfy the same constraint.
+schema_version: 1
+
+context:
+  version: "0.2.6"
+
+package:
+  name: deffcode
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/d/deffcode/deffcode-${{ version }}.tar.gz
+  sha256: 7a3670c82a554316e3aafdcfd5755064fc0331b054817f8e6b7d81c549609692
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.9
+    - cython
+    - numpy
+    - requests
+    - colorlog
+    - tqdm
+    # not declared upstream but required at runtime, mirroring conda-forge
+    - py-opencv
+    - ffmpeg
+
+tests:
+  - python:
+      imports:
+        - deffcode
+      pip_check: false
+
+about:
+  homepage: https://github.com/abhiTronix/deffcode
+  summary: High-performance real-time video frames decoder built on FFmpeg
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - roaldarbol

@@ -26,6 +26,7 @@ mediapipe wheel for Intel macs). Python 3.11–3.12.
 | `skellypings` | 0.1.0 | `skellypings` @ main (commit-pinned) |
 | `freemocap-blender-addon` | 2026.4.1041 | `freemocap_blender_addon` @ main (commit-pinned) |
 | `mediapipe` | 0.10.33 | repackaged PyPI wheels (not on conda-forge) |
+| `deffcode` | 0.2.6 | PyPI sdist, noarch — conda-forge ships no osx-arm64 build |
 
 Upstream resolves the sub-packages from git branches via `uv` sources; each
 recipe here pins the corresponding commit in `context.git_rev`. Everything else
